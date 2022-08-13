@@ -1,0 +1,23 @@
+FROM php:8.1-cli
+
+ARG user
+ARG uid
+
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
+
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN chown -R $user:$user /home/$user
+
+COPY ./src /src/app
+WORKDIR /src/app
+
+USER $user

@@ -5,39 +5,32 @@
 
 version: '3'
 services:
-    php:
-        image: php:8.1-cli
-        restart: never
-        volumes:
-            - .:./
-        working_dir: /src/app
     composer:
-        image: composer
+        build:
+            context: .
+            dockerfile: dockerfile-composer
         environment: 
             - COMPOSE_CACHE_DIR=./app/var/cache/composer
-        restart: never
+        restart: "no"
         volumes:
-            - ./:./src/app
-        depends_on: 
-            - php
+            - ./:/src/app
+        depends_on:
             - app
     app:
-        build: dockerfile-app
+        build:
+            context: .
+            dockerfile: dockerfile-app
         restart: always
-        port: 
+        ports: 
             - 80:80
         volumes:
-            - ./:./src/app
-        networks:
-            - tests
+            - ./:/src/app/
     tests:
         image: php:8.1-cli
-        restart: never
+        restart: "no"
         volumes:
-            - ./:./src/app
+            - ./:/src/app
         working_dir: /src/app
         entrypoint: vendor/bin/phpunit
         depends_on: 
             - composer
-        networks:
-            - app

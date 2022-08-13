@@ -1,23 +1,30 @@
-FROM php:8.1-cli
+FROM ubuntu:latest
 
-ARG user
-ARG uid
+RUN apt-get update && apt-get install -y \ 
+    software-properties-common \
+    ca-certificates \
+    lsb-release \
+    apt-transport-https
+
+RUN add-apt-repository ppa:ondrej/php
+
+RUN apt-get update && apt-get install -y \ 
+    php8.1
 
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip
+    openssl \
+    php-common \
+    php-curl \
+    php-json \
+    php-mbstring \
+    php-mysql \
+    php-xml \
+    php-zip 
 
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN chown -R $user:$user /home/$user
+COPY . /src/app
 
-COPY ./src /src/app
 WORKDIR /src/app
 
-USER $user
+ENTRYPOINT ["php", "-S", "localhost:8000", "-t", "public"]

@@ -1,0 +1,38 @@
+# 2  serviços a serem construidos e mantidos:
+    # Aplicação
+    # testes
+# talvez ter uma imagem do servidor
+
+version: '3'
+services:
+    composer:
+        build:
+            context: .
+            dockerfile: dockerfile-composer
+        restart: "no"
+        command: composer install
+        volumes:
+            - ./app/wallet:/src/app/
+        working_dir: /src/app/
+    app:
+        build:
+            context: .
+            dockerfile: dockerfile-app
+        # restart: always
+        ports: 
+            - 8000:8000
+        expose:
+            - 8000
+        volumes:
+            - ./app/wallet:/src/app/
+        depends_on:
+            - composer
+    # tests:
+    #     image: php:8.1-cli
+    #     restart: "no"
+    #     volumes:
+    #         - ./:/src/app
+    #     working_dir: /src/app
+    #     entrypoint: vendor/bin/phpunit
+    #     depends_on: 
+    #         - composer

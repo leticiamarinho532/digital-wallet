@@ -1,0 +1,32 @@
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y \ 
+    software-properties-common \
+    ca-certificates \
+    lsb-release \
+    apt-transport-https
+
+RUN add-apt-repository ppa:ondrej/php
+
+RUN apt-get update && apt-get install -y \ 
+    php8.1
+
+RUN apt-get update && apt-get install -y \
+    openssl \
+    php-common \
+    php-curl \
+    php-json \
+    php-mbstring \
+    php-mysql \
+    php-xml \
+    php-zip 
+
+# RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+WORKDIR /src/app/
+
+COPY /app/wallet/ /src/app/
+
+EXPOSE 8000
+
+ENTRYPOINT ["php", "artisan", "serve", "--host=0.0.0.0"]

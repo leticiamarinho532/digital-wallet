@@ -9,28 +9,30 @@ services:
         build:
             context: .
             dockerfile: dockerfile-composer
-        environment: 
-            - COMPOSE_CACHE_DIR=./app/var/cache/composer
         restart: "no"
+        command: composer install
         volumes:
-            - ./:/src/app
-        depends_on:
-            - app
+            - ./app/wallet:/src/app/
+        working_dir: /src/app/
     app:
         build:
             context: .
             dockerfile: dockerfile-app
-        restart: always
+        # restart: always
         ports: 
-            - 80:80
+            - 8000:8000
+        expose:
+            - 8000
         volumes:
-            - ./:/src/app/
-    tests:
-        image: php:8.1-cli
-        restart: "no"
-        volumes:
-            - ./:/src/app
-        working_dir: /src/app
-        entrypoint: vendor/bin/phpunit
-        depends_on: 
+            - ./app/wallet:/src/app/
+        depends_on:
             - composer
+    # tests:
+    #     image: php:8.1-cli
+    #     restart: "no"
+    #     volumes:
+    #         - ./:/src/app
+    #     working_dir: /src/app
+    #     entrypoint: vendor/bin/phpunit
+    #     depends_on: 
+    #         - composer

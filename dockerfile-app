@@ -23,8 +23,10 @@ RUN apt-get update && apt-get install -y \
 
 # RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-COPY . /src/app
+WORKDIR /src/app/
 
-WORKDIR /src/app
+COPY /app/wallet/ /src/app/
 
-ENTRYPOINT ["php", "-S", "localhost:8000", "-t", "public"]
+EXPOSE 8000
+
+ENTRYPOINT ["php", "artisan", "serve", "--host=0.0.0.0"]

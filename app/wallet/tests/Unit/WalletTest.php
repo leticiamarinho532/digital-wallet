@@ -7,9 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class LoadBalanceRepositoryMock implements LoadBalanceRepository
 {
-    private $value;
+    public $value;
 
-    public function loadBalance(int $userId, $value)
+    public function loadBalance(int $userId, float $value)
     {
         $this->value = $value;
     }
@@ -20,7 +20,7 @@ interface LoadBalanceRepository
     public function loadBalance(int $userId, float $value);
 }
 
-class checkBalanceValue
+class Wallet
 {
     private $LoadBalanceRepository;
 
@@ -54,10 +54,11 @@ class WalletTest extends TestCase
     public function testCanSeeAccountBalanceWhenNoValueIn(): void
     {
         $loadBalanceRepository = new LoadBalanceRepositoryMock();
-        $checkBalanceValue = new checkBalanceValue($loadBalanceRepository);
+        $checkBalanceValue = new Wallet($loadBalanceRepository);
+        $seeValue = $checkBalanceValue->seeValue(1, 0.00);
 
         $this->assertEquals(
-            $checkBalanceValue,
+            $seeValue,
             0.00
         );
     }

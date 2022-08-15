@@ -12,12 +12,11 @@ return new class () extends Migration {
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('full_name');
-            $table->string('cpf_cnpj')->unique();
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->foreign('user_id_sender')->references('id')->on('users');
+            $table->foreign('user_id_reciver')->references('id')->on('users');
+            $table->float('amount', 7, 2);
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class () extends Migration {
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('transactions');
     }
 };

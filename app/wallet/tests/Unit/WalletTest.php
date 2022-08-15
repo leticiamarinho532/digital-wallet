@@ -3,37 +3,15 @@
 namespace Tests\Unit;
 
 use PhpParser\Node\Expr\FuncCall;
-use PHPUnit\Framework\TestCase;
+// use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
+use Mockery\MockInterface;
+use Mockery;
 
-class LoadBalanceRepositoryMock implements LoadBalanceRepository
-{
-    public $value;
+use App\Services\WalletService;
+use App\Repositories\WalletRepository;
 
-    public function loadBalance(int $userId, float $value)
-    {
-        $this->value = $value;
-    }
-}
-
-interface LoadBalanceRepository
-{
-    public function loadBalance(int $userId, float $value);
-}
-
-class Wallet
-{
-    private $LoadBalanceRepository;
-
-    public function __construct(LoadBalanceRepository $LoadBalanceRepository)
-    {
-        $this->LoadBalanceRepository = $LoadBalanceRepository;
-    }
-
-    public function seeValue($userId)
-    {
-        return $this->LoadBalanceRepository->loadBalance($userId, 0.00);
-    }
-}
+use App\Repositories\Interface\WalletRepositoryInterface;
 
 class WalletTest extends TestCase
 {
@@ -53,13 +31,15 @@ class WalletTest extends TestCase
 
     public function testCanSeeAccountBalanceWhenNoValueIn(): void
     {
-        $loadBalanceRepository = new LoadBalanceRepositoryMock();
-        $checkBalanceValue = new Wallet($loadBalanceRepository);
-        $seeValue = $checkBalanceValue->seeValue(1, 0.00);
+        $walletRepositoryMock = $this->mock(WalletRepositoryInterface::class);
+        $walletRepositoryMock->shouldReceive('displayBalance')->andReturn(3.00);
+
+        $checkBalanceValue = new WalletService($walletRepositoryMock);
+        $seeValue = $checkBalanceValue->displayBalance(1);
 
         $this->assertEquals(
             $seeValue,
-            0.00
+            3.00
         );
     }
 }

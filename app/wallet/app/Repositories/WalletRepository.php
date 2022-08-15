@@ -11,4 +11,8 @@ class WalletRepository implements WalletRepositoryInterface
     {
         return Wallet::where('user_id', $userId);
     }
+
+    public function checkBalance($userId, $value)
+    {
+    }
 }

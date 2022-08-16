@@ -7,7 +7,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function createUser(object $userData)
+    public function create(object $userData)
     {
         $createUser = User::create($userData);
 
@@ -30,6 +30,6 @@ class UserRepository implements UserRepositoryInterface
             return false;
         }
 
-        return true;
+        return $checkUser->id;
     }
 }

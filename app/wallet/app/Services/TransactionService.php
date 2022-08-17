@@ -43,15 +43,32 @@ class TrasactionService
                 throw new \Exception('erro ao transferir valor');
             }
 
-            $verifyIfUserHasBalanceToSend = floatval($getBalanceValue) - floatval($value);
+            $verifyIfUserHasBalanceToSend = $this->verifyIfUserHasBalanceToSend($getBalanceValue, $value);
 
-            if ($verifyIfUserHasBalanceToSend < 0) {
-                throw new \Exception('saldo insuficiente');
+            $responseExecuteTransaction = $this->executeTransaction(
+                $userIdSender,
+                $userIdReciever,
+                $value,
+                $verifyIfUserHasBalanceToSend
+            );
+
+
+            if ($responseExecuteTransaction !== true) {
+                throw new \Exception('erro ao transferir valor');
             }
 
-            # A PARTIR DAQUI
+            return 'valor transferido com sucesso';
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
-            $updateBalanceValue = $this->walletRepository->updateBalance($verifyIfUserHasBalanceToSend);
+    public function executeTransaction($userIdSender, $userIdReciever, $value, $verifyIfUserHasBalanceToSend)
+    {
+        try {
+            $this->walletRepository->startTransactionWatch();
+
+            $updateBalanceValue = $this->walletRepository->updateBalance($userIdSender, $verifyIfUserHasBalanceToSend);
 
             if ($updateBalanceValue === false) {
                 throw new \Exception('erro ao transferir valor');
@@ -59,15 +76,36 @@ class TrasactionService
 
             $authorizeTransfer = $this->transferAutorizerService->authorize($userIdSender, $userIdReciever, $value);
 
-            if ($updateBalanceValue === false) {
+            if ($authorizeTransfer === false) {
                 throw new \Exception('erro ao transferir valor');
             }
 
-            # ATE AQUI
+            $insertTransactionValueOnWallet = $this->walletRepository->insertTransactionValue(
+                $userIdSender,
+                $userIdReciever,
+                $value
+            );
 
-            return 'valor transferido com sucesso';
+            if ($insertTransactionValueOnWallet === false) {
+                throw new \Exception('erro ao transferir valor');
+            }
+
+            $this->walletRepository->commitTransactionWatch();
+
+            return true;
         } catch (\Exception $e) {
-            return $e->getMessage();
+            $this->walletRepository->rollBackTransactionWatch();
         }
+    }
+
+    public function verifyIfUserHasBalanceToSend($balanceValue, $value)
+    {
+        $verifyIfUserHasBalanceToSend = floatval($balanceValue) - floatval($value);
+
+        if ($verifyIfUserHasBalanceToSend < 0) {
+            return false;
+        }
+
+        return true;
     }
 }

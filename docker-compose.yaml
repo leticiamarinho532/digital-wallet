@@ -25,6 +25,9 @@ services:
             - ./app/wallet:/src/app/
         depends_on:
             - composer
+            - database
+        links:
+            - database
     database:
         image: mysql:8.0.30
         command: --innodb-use-native-aio=0

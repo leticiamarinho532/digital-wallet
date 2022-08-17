@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Repositories;
@@ -10,7 +9,9 @@ class WalletRepository implements WalletRepositoryInterface
 {
     public function getBalance($userId)
     {
-        return Wallet::where('user_id', $userId);
+        $balance = Wallet::where('user_id', $userId)->first();
+
+        return $balance->amount;
     }
 
     public function startTransactionWatch()

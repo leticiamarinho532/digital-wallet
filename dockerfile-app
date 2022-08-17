@@ -27,6 +27,8 @@ WORKDIR /src/app/
 
 COPY /app/wallet/ /src/app/
 
+COPY --from=composer /usr/bin/composer /usr/bin/composer
+
 EXPOSE 8000
 
 ENTRYPOINT ["php", "artisan", "serve", "--host=0.0.0.0"]

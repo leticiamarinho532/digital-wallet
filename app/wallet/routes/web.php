@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,7 +21,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/user/create', '\App\Controllers\UserController::create');
-Route::post('/user/login', '\App\Controllers\UserController::logIn');
-Route::get('/wallet/balance', '\App\Controllers\WalletController::getBalance');
-Route::post('/transaction/do', '\App\Controllers\TransactionController::doTransaction');
+Route::post('/user/create', [UserController::class, 'create']);
+Route::post('/user/login', [UserController::class, 'logIn']);
+Route::get('/wallet/balance/{userId}', [WalletController::class, 'getBalance']);
+Route::post('/transaction/do', [TransactionController::class, 'doTransaction']);

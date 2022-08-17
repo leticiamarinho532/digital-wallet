@@ -5,143 +5,191 @@ namespace Tests\Unit;
 use Tests\TestCase;
 
 use App\Services\UserService;
-use App\Repositories\UserRepository;
 use App\Repositories\Interface\UserRepositoryInterface;
 
 class UserTest extends TestCase
 {
-    /**
-     * A basic unit test example.
-     *
-     * @return void
-     */
-    public function test_example()
-    {
-        $this->assertTrue(true);
-    }
-
-    # TESTS TO DO
-    #   create user
-    #       - criar usuario sem email
-    #       - criar usuario sem nome completo
-    #       - criar usuario sem senha
-    #       - criar usuario sem cpf
-    #
-    #       - criar usuario com email duplicado
-    #       - criar usuario com cpf duplicado
-    #
-    #       - criar usuario com sucesso
-    #   login
-    #       - login com usuario invalido
-    #       - login com usuario valido
-
     public function testCannotCreateUserWithoutEmail()
     {
-        $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
-        $UserRepositoryMock->shouldReceive('createUser')->andReturn(false);
+        $userRepositoryMock = $this->mock(UserRepositoryInterface::class);
+        $userRepositoryMock->shouldReceive('create')->andReturn(false);
 
-        $userData = [
+        $userData = json_decode(json_encode([
             'fullName' => 'Maria João',
             'cpf' => '000.000.000-00',
             'email' => '',
             'password' => '123456',
             'userType' => '2'
-        ];
+        ]));
 
-        $userService = new UserService($UserRepositoryMock);
-        $userService->createUser($userData);
+        $userService = new UserService($userRepositoryMock);
+        $createUser = $userService->createUser($userData);
 
         $this->assertEquals(
-            $userService,
-            false
+            $createUser,
+            'não foi possível criar o usuário'
         );
     }
 
     public function testCannotCreateUserWithoutFullName()
     {
         $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
-        $UserRepositoryMock->shouldReceive('createUser')->andReturn(false);
+        $UserRepositoryMock->shouldReceive('create')->andReturn(false);
 
-        $userData = [
+        $userData = json_decode(json_encode([
             'fullName' => '',
             'cpf' => '000.000.000-00',
             'email' => 'marinajoao@email.com',
             'password' => '123456',
             'userType' => '2'
-        ];
+        ]));
 
         $userService = new UserService($UserRepositoryMock);
-        $userService->createUser($userData);
+        $createUser = $userService->createUser($userData);
 
         $this->assertEquals(
-            $userService,
-            false
+            $createUser,
+            'não foi possível criar o usuário'
         );
     }
 
     public function testCannotCreateUserWithoutPassword()
     {
         $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
-        $UserRepositoryMock->shouldReceive('createUser')->andReturn(false);
+        $UserRepositoryMock->shouldReceive('create')->andReturn(false);
 
-        $userData = [
+        $userData = json_decode(json_encode([
             'fullName' => 'Maria João',
             'cpf' => '000.000.000-00',
             'email' => 'marinajoao@email.com',
             'password' => '',
             'userType' => '2'
-        ];
+        ]));
 
         $userService = new UserService($UserRepositoryMock);
-        $userService->createUser($userData);
+        $createUser = $userService->createUser($userData);
 
         $this->assertEquals(
-            $userService,
-            false
+            $createUser,
+            'não foi possível criar o usuário'
         );
     }
 
     public function testCannotCreateUserWithoutCpf()
     {
         $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
-        $UserRepositoryMock->shouldReceive('createUser')->andReturn(false);
+        $UserRepositoryMock->shouldReceive('create')->andReturn(false);
 
-        $userData = [
+        $userData = json_decode(json_encode([
             'fullName' => 'Maria João',
             'cpf' => '',
             'email' => 'marinajoao@email.com',
             'password' => '123456',
             'userType' => '2'
-        ];
+        ]));
 
         $userService = new UserService($UserRepositoryMock);
-        $userService->createUser($userData);
+        $createUser = $userService->createUser($userData);
 
         $this->assertEquals(
-            $userService,
-            false
+            $createUser,
+            'não foi possível criar o usuário'
         );
     }
 
     public function testCannotCreateUserWithoutUserType()
     {
         $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
-        $UserRepositoryMock->shouldReceive('createUser')->andReturn(false);
+        $UserRepositoryMock->shouldReceive('create')->andReturn(false);
 
-        $userData = [
+        $userData = json_decode(json_encode([
             'fullName' => 'Maria João',
-            'cpf' => '',
+            'cpf' => '000.000.000-00',
             'email' => 'marinajoao@email.com',
             'password' => '123456',
             'userType' => ''
-        ];
+        ]));
 
         $userService = new UserService($UserRepositoryMock);
-        $userService->createUser($userData);
+        $createUser = $userService->createUser($userData);
 
         $this->assertEquals(
-            $userService,
+            $createUser,
+            'não foi possível criar o usuário'
+        );
+    }
+
+    public function testCanCreateUserWithAllRightInformation()
+    {
+        $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
+        $UserRepositoryMock->shouldReceive('create')->andReturn(true);
+
+        $userData = json_decode(json_encode([
+            'fullName' => 'Maria João',
+            'cpf' => '000.000.000-00',
+            'email' => 'marinajoao@email.com',
+            'password' => '123456',
+            'userType' => '2'
+        ]));
+
+        $userService = new UserService($UserRepositoryMock);
+        $createUser = $userService->createUser($userData);
+
+        $this->assertEquals(
+            $createUser,
+            'usuário criado com sucesso'
+        );
+    }
+
+    // public function testCannotLoginInWithoutEmail()
+    // {
+    // }
+
+    // public function testCannotLoginInWithoutPassword()
+    // {
+    // }
+
+    // public function testCannotLoginWithInvalidCredentials()
+    // {
+    // }
+
+    // public function testCanLogInWithValidCredentials()
+    // {
+    // }
+
+    public function testCannotVerifyIfUserIsValidWithouEmail()
+    {
+        $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
+        $UserRepositoryMock->shouldReceive('checkIfUserExist')->andReturn(false);
+
+        $userData = json_decode(json_encode([
+            'email' => '',
+        ]));
+
+        $userService = new UserService($UserRepositoryMock);
+        $checkIfUserExist = $userService->checkIfUserExist($userData);
+
+        $this->assertEquals(
+            $checkIfUserExist,
             false
+        );
+    }
+
+    public function testCanVerifyIfUserIsValidWithEmail()
+    {
+        $UserRepositoryMock = $this->mock(UserRepositoryInterface::class);
+        $UserRepositoryMock->shouldReceive('checkIfUserExist')->andReturn(true);
+
+        $userData = json_decode(json_encode([
+            'email' => 'marinajoao@email.com',
+        ]));
+
+        $userService = new UserService($UserRepositoryMock);
+        $checkIfUserExist = $userService->checkIfUserExist($userData);
+
+        $this->assertEquals(
+            $checkIfUserExist,
+            true
         );
     }
 }

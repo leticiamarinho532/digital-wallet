@@ -22,7 +22,20 @@ class UserRepository implements UserRepositoryInterface
     {
         $checkUser = User::where(
             ['email', '=', $userData->email],
-            ['password', '=', $userData->password]
+        )
+        ->fisrt();
+
+        if ($checkUser) {
+            return false;
+        }
+
+        return $checkUser->id;
+    }
+
+    public function checkPassword(object $userData)
+    {
+        $checkUser = User::where(
+            ['password', '=', $userData->password],
         )
         ->fisrt();
 

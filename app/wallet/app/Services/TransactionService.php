@@ -2,20 +2,22 @@
 
 namespace App\Services;
 
-class TrasactionService
+use App\Repositories\Interface\TransactionsRepositoryInterface;
+use App\Repositories\Interface\WalletRepositoryInterface;
+use App\Repositories\Interface\UserRepositoryInterface;
+use App\Interface\TransactionAuthorizerInterface;
+
+class TransactionService
 {
-    private $transactionRepository;
     private $walletRepository;
     private $userRepository;
     private $transferAutorizerService;
 
     public function __construct(
-        TransactionsRepositoryInterface $transactionsRepository,
         WalletRepositoryInterface $walletRepository,
         UserRepositoryInterface $userRepository,
-        TrasferAuthorizerinterface $transferAutorizerService
+        TransactionAuthorizerInterface $transferAutorizerService
     ) {
-        $this->transactionRepository = $transactionsRepository;
         $this->walletRepository = $walletRepository;
         $this->userRepository = $userRepository;
         $this->transferAutorizerService = $transferAutorizerService;
@@ -23,13 +25,6 @@ class TrasactionService
 
     public function transferValue($userIdSender, $userIdReciever, $value)
     {
-        # verificar usuario enviador
-        # verificar usuario recebedor
-        # verificar valor de saldo do usuario enviador
-        # descontar valor do saldo
-        # autorizar transferencia
-        # retornar mensagem
-
         try {
             $verifyUserRecieverExists = $this->userRepository->checkIfUserExist($userIdReciever);
 
@@ -51,7 +46,6 @@ class TrasactionService
                 $value,
                 $verifyIfUserHasBalanceToSend
             );
-
 
             if ($responseExecuteTransaction !== true) {
                 throw new \Exception('erro ao transferir valor');
@@ -80,21 +74,12 @@ class TrasactionService
                 throw new \Exception('erro ao transferir valor');
             }
 
-            $insertTransactionValueOnWallet = $this->walletRepository->insertTransactionValue(
-                $userIdSender,
-                $userIdReciever,
-                $value
-            );
-
-            if ($insertTransactionValueOnWallet === false) {
-                throw new \Exception('erro ao transferir valor');
-            }
-
             $this->walletRepository->commitTransactionWatch();
-
             return true;
         } catch (\Exception $e) {
             $this->walletRepository->rollBackTransactionWatch();
+
+            return false;
         }
     }
 

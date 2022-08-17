@@ -9,7 +9,6 @@ services:
         build:
             context: .
             dockerfile: dockerfile-composer
-        restart: "no"
         command: composer install
         volumes:
             - ./app/wallet:/src/app/
@@ -18,7 +17,6 @@ services:
         build:
             context: .
             dockerfile: dockerfile-app
-        # restart: always
         ports: 
             - 8000:8000
         expose:
@@ -27,6 +25,20 @@ services:
             - ./app/wallet:/src/app/
         depends_on:
             - composer
+    database:
+        image: mysql:8.0.30
+        command: --innodb-use-native-aio=0
+        restart: always
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: techchallenge
+            MYSQL_ALLOW_EMPTY_PASSWORD: true
+        volumes:
+            - "./docker/dbdata:/var/lib/mysql"
+        
+
+
     # tests:
     #     image: php:8.1-cli
     #     restart: "no"

@@ -29,7 +29,7 @@ class UserRepository implements UserRepositoryInterface
             return false;
         }
 
-        return $checkUser->id;
+        return $checkUser;
     }
 
     public function checkPassword(object $userData)

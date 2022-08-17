@@ -8,6 +8,7 @@ use App\Services\TransactionService;
 use App\Repositories\Interface\WalletRepositoryInterface;
 use App\Repositories\Interface\UserRepositoryInterface;
 use App\Interface\TransactionAuthorizerInterface;
+use App\Interface\NotifyServiceInterface;
 
 class TransactionTest extends TestCase
 {
@@ -36,6 +37,9 @@ class TransactionTest extends TestCase
         $transactionAuthorizerMock = $this->mock(TransactionAuthorizerInterface::class);
         $transactionAuthorizerMock->shouldReceive('authorize')->andReturn(true);
 
+        $notifyMock = $this->mock(NotifyServiceInterface::class);
+        $notifyMock->shouldReceive('notify')->andReturn(true);
+
         $userSender = 1;
         $userReciever = 2;
         $value = '@96.0';
@@ -43,7 +47,8 @@ class TransactionTest extends TestCase
         $transactionService = new TransactionService(
             $walletRepositoryMock,
             $UserRepositoryMock,
-            $transactionAuthorizerMock
+            $transactionAuthorizerMock,
+            $notifyMock
         );
         $transferValue = $transactionService->transferValue($userSender, $userReciever, $value);
 
@@ -132,6 +137,9 @@ class TransactionTest extends TestCase
         $transactionAuthorizerMock = $this->mock(TransactionAuthorizerInterface::class);
         $transactionAuthorizerMock->shouldReceive('authorize')->andReturn(true);
 
+        $notifyMock = $this->mock(NotifyServiceInterface::class);
+        $notifyMock->shouldReceive('notify')->andReturn(true);
+
         $userSender = 1;
         $userReciever = 2;
         $value = 5.00;
@@ -139,7 +147,8 @@ class TransactionTest extends TestCase
         $transactionService = new TransactionService(
             $walletRepositoryMock,
             $UserRepositoryMock,
-            $transactionAuthorizerMock
+            $transactionAuthorizerMock,
+            $notifyMock
         );
         $transferValue = $transactionService->transferValue($userSender, $userReciever, $value);
 

@@ -6,21 +6,25 @@ use App\Repositories\Interface\TransactionsRepositoryInterface;
 use App\Repositories\Interface\WalletRepositoryInterface;
 use App\Repositories\Interface\UserRepositoryInterface;
 use App\Interface\TransactionAuthorizerInterface;
+use App\Interface\NotifyServiceInterface;
 
 class TransactionService
 {
     private $walletRepository;
     private $userRepository;
     private $transferAutorizerService;
+    private $notifyService;
 
     public function __construct(
         WalletRepositoryInterface $walletRepository,
         UserRepositoryInterface $userRepository,
-        TransactionAuthorizerInterface $transferAutorizerService
+        TransactionAuthorizerInterface $transferAutorizerService,
+        NotifyServiceInterface $notifyService
     ) {
         $this->walletRepository = $walletRepository;
         $this->userRepository = $userRepository;
         $this->transferAutorizerService = $transferAutorizerService;
+        $this->notifyService = $notifyService;
     }
 
     public function transferValue($userIdSender, $userIdReciever, $value)
@@ -50,6 +54,8 @@ class TransactionService
             if ($responseExecuteTransaction !== true) {
                 throw new \Exception('erro ao transferir valor');
             }
+
+            $this->notifyService->notify($verifyUserRecieverExists);
 
             return 'valor transferido com sucesso';
         } catch (\Exception $e) {

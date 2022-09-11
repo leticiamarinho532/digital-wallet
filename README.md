@@ -1,4 +1,4 @@
-# tech-challenge
+# digital-wallet
 ## An digital wallet with two profiles types
 
 ### Sumary

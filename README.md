@@ -1,6 +1,8 @@
 # digital-wallet
 ## An digital wallet with two profiles types
 
+# **WARNING:** Not complete + need refactor!
+
 ### Sumary
 
 1. Documentation

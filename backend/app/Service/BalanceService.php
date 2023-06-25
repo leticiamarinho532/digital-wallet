@@ -74,14 +74,15 @@ class BalanceService
      * Update balance
      *
      * @param int $userId
+     * @param string $extractType
      * @param float $value
      * @return void
      * @throws void
      */
-    public function update($userId, $value)
+    public function update($userId, $extractType, $value)
     {
         try {
-            return $this->extractService->store($userId, $value);
+            return $this->extractService->store($userId, $extractType, $value);
         } catch (Exception $exception) {
             //TODO: store error in long at minimun
 
